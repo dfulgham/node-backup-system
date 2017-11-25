@@ -1,0 +1,25 @@
+{
+  "name": "node-backup-system",
+  "version": "1.0.0",
+  "description": "NodeJS and CouchDB backup service for Linux and Windows.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://dfulgham@github.com/dfulgham/node-backup-system.git"
+  },
+  "author": "dfulgham (David Fulgham, AScT)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dfulgham/node-backup-system/issues"
+  },
+  "homepage": "https://github.com/dfulgham/node-backup-system#readme",
+  "dependencies": {
+    "nano": "^6.4.2",
+    "node-schedule": "^1.2.5",
+    "nodejs-disks": "^0.2.1",
+    "uuid": "^3.1.0"
+  }
+}

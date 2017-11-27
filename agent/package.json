@@ -1,10 +1,10 @@
 {
-  "name": "node-backup-system",
+  "name": "node-backup-system-agent",
   "version": "1.0.0",
   "description": "NodeJS and CouchDB backup service for Linux and Windows.",
   "main": "app.js",
   "scripts": {
-    "agent": "electron /agent/."
+    "start-agent": "electron ."
   },
   "repository": {
     "type": "git",

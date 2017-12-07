@@ -4,7 +4,7 @@
   "description": "NodeJS and CouchDB backup service for Linux and Windows.",
   "main": "app.js",
   "scripts": {
-    "agent": "electron /agent/."
+    "agent": "electron agent/."
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/dfulgham/node-backup-system#readme",
   "dependencies": {
+    "electron-debug": "^1.4.0",
     "nano": "^6.4.2",
     "node-schedule": "^1.2.5",
     "nodejs-disks": "^0.2.1",

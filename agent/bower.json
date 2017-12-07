@@ -1,0 +1,21 @@
+{
+  "name": "node-backup-system-agent",
+  "description": "NodeJS and CouchDB backup service for Linux and Windows.",
+  "main": "app.js",
+  "authors": [
+    "dfulgham (David Fulgham",
+    "AScT)"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/dfulgham/node-backup-system",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "angularjs#^1.6.7"
+  }
+}

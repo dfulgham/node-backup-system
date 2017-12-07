@@ -3,12 +3,19 @@
 
     // ELECTRON Stuff
 
-    var app = require('app');  // Module to control application life.
-    var BrowserWindow = require('browser-window');  // Module to create native browser window.
+    const Electron = require('electron');
+
+  const {app, BrowserWindow} = require('electron')
+  const {Menu, Tray} = require('electron')
+  const nativeImage = require('electron').nativeImage
+  let tray = null;
+  let mainWindow = null;
+
+  //require('electron-debug')({showDevTools: true});
 
     // Keep a global reference of the window object, if you don't, the window will
     // be closed automatically when the JavaScript object is garbage collected.
-    var mainWindow = null;
+
 
     // Quit when all windows are closed.
     app.on('window-all-closed', function() {
@@ -22,29 +29,71 @@
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     app.on('ready', function() {
-      // Create the browser window.
-      mainWindow = new BrowserWindow({
-        width: 600,
-        height: 300,
-        'min-width': 500,
-        'min-height': 200,
-        'accept-first-mouse': true,
-        'title-bar-style': 'hidden'
-      });
+
+
+        let image = nativeImage.createFromPath('images/icon.png')
+
+
+
+      tray = new Tray('images/icon.png')
+      const contextMenu = Menu.buildFromTemplate([
+        {label: 'Item1', type: 'radio'},
+        {label: 'Item2', type: 'radio'},
+        {label: 'Item3', type: 'radio', checked: true},
+        {label: 'Item4', type: 'radio'}
+      ])
+      tray.setToolTip('This is my application.')
+      //tray.setContextMenu(contextMenu)
+      tray.on('click', buildWindow)
+
+
+
+      function buildWindow(){
+
+        var cursorPosition = Electron.screen.getCursorScreenPoint();
+
+
+        console.log("tray clicked")
+        // Create the browser window.
+       if(!mainWindow)  {
+         mainWindow = new BrowserWindow({
+          x: cursorPosition.x - 400,
+          y: 40,
+          frame: false,
+          transparent: true,
+          width: 800,
+          height: 400,
+          MinWidth: 500,
+          MinHeight: 200,
+          resizable: false,
+          // 'accept-first-mouse': true,
+          // 'title-bar-style': 'hidden'
+        })
+        //mainWindow.on('blur',buildWindow)
+        // Emitted when the window is closed.
+        mainWindow.on('closed', function() {
+          // Dereference the window object, usually you would store windows
+          // in an array if your app supports multi windows, this is the time
+          // when you should delete the corresponding element.
+          mainWindow = null;
+        });
+        mainWindow.loadURL('file://' + __dirname + '/index.html');
+      }
+        else {
+          if(mainWindow.isVisible()) mainWindow.hide()
+          else mainWindow.show()
+        }
+
+      }
+
 
       // and load the index.html of the app.
-      mainWindow.loadUrl('file://' + __dirname + '/index.html');
+      //mainWindow.loadURL('file://' + __dirname + '/index.html');
 
       // Open the DevTools.
       //mainWindow.openDevTools();
 
-      // Emitted when the window is closed.
-      mainWindow.on('closed', function() {
-        // Dereference the window object, usually you would store windows
-        // in an array if your app supports multi windows, this is the time
-        // when you should delete the corresponding element.
-        mainWindow = null;
-      });
+
     });
 
 
@@ -58,8 +107,7 @@
 
 
     var schedule = require('node-schedule');
-    var disks = require('nodejs-disks');
-    var nano = require('nano')('http://127.0.0.1:5984/node_backup');
+    var nano = require('nano')('http://10.10.0.200:5984/node_backup');
     const uuid = require('uuid/v1');
     var fs = require('fs')
     var os = require('os')
@@ -67,40 +115,7 @@
     var configChanges;
     var config;
 
-    // disks.drives(
-    //   function(err, drives) {
-    //     disks.drivesDetail(
-    //       drives,
-    //       function(err, data) {
-    //         for (var i = 0; i < data.length; i++) {
-    //           /* Get drive mount point */
-    //           console.log("mount",data[i].mountpoint);
-    //
-    //           /* Get drive total space */
-    //           console.log("total:",data[i].total);
-    //
-    //           /* Get drive used space */
-    //           console.log("used:",data[i].used);
-    //
-    //           /* Get drive available space */
-    //           console.log("avail:",data[i].available);
-    //
-    //           /* Get drive name */
-    //           console.log("name:",data[i].drive);
-    //
-    //           // /* Get drive used percentage */
-    //           // console.log("used%:".data[i].usedPer);
-    //           //
-    //           // /* Get drive free percentage */
-    //           // console.log("free%:",data[i].freePer);
-    //         }
-    //
-    //
-    //
-    //       }
-    //     );
-    //   }
-    // )
+
 
 
     // Initialize Backup Agent
@@ -127,21 +142,21 @@
       fs.readFile('./config', 'utf8',function(err, data) {
         if (err) console.log("file read error:", err);
         else {
-          console.log("config exists", data)
+          // console.log("config exists", data)
           data = JSON.parse(data)
           // query database and see if there are any new records
           nano.get(data._id,{include_docs: true},function(err,docs){
-            console.log("couchdb error:",err)
-            if (err.error=="not_found") {
+            // console.log("couchdb error:",err)
+            if (err && err.error=="not_found") {
               delete data._rev; // remove revision;
               return sendConfig(data); // no record on the server, so send what we have and follow
             }
 
-            console.log("database record:",docs)
+            // console.log("database record:",docs)
             if (docs._rev != data._rev) {
               // write new doc to disk
               fs.writeFile("./config", JSON.stringify(docs), function(err) {
-                console.log("changes applied", err)
+                // console.log("changes applied", err)
               })
             }
           })
@@ -158,10 +173,10 @@
 
             }
             configChanges.on('change', function(change) {
-              console.log("change: ", change);
+              // console.log("change: ", change);
               //write config to disk
               fs.writeFile("./config", JSON.stringify(change.doc), function(err) {
-                console.log("changes applied", err)
+                // console.log("changes applied", err)
               })
 
             })
@@ -173,12 +188,12 @@
 
   function sendConfig(config) {
     nano.insert(config,{include_docs: true}, function(err, data) {
-  console.log("creating database object on initial run or database does not contain record", err, data);
+  // console.log("creating database object on initial run or database does not contain record", err, data);
     // get doc
     nano.get(data.id,{include_docs: true}, function(err,docs){
 
       fs.writeFile("./config", JSON.stringify(docs), function(err) {
-        console.log("changes applied", err,docs)
+        // console.log("changes applied", err,docs)
       })
         // setup config change feed
         configChanges = nano.follow({
@@ -192,10 +207,10 @@
 
         }
         configChanges.on('change', function(change) {
-          console.log("change: ", change);
+          // console.log("change: ", change);
           //write config to disk
           fs.writeFile("./config", JSON.stringify(change.doc), function(err) {
-            console.log("changes applied", err)
+            // console.log("changes applied", err)
           })
 
         })

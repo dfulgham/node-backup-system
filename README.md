@@ -22,6 +22,7 @@ NodeJS and CouchDB backup service for Linux and Windows.
 
 ```
  {
+    "type": "job",
     "name": "Descriptive name",
     "tasks": [
       {
